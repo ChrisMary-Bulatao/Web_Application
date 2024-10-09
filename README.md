@@ -4,7 +4,7 @@
 # Assignment 1: Building and Versioning a Web Application Using Docker, Kubernetes, and GitHub
 
 ## Objective
-The goal of this assignment is to develop a web application based on the provided architecture, deploy it using Docker and Kubernetes, and manage the code versioning using GitHub.
+This assignment aims to develop a web application based on the provided architecture, deploy it using Docker and Kubernetes, and manage the code versioning using GitHub.
 
 ## Requirements
 - **Frontend**: HTML and JavaScript
