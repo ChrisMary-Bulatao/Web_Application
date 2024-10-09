@@ -8,10 +8,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ marginTop:'60px'}}>
-      <h1>Welcome to MyApp</h1>
+    <div style={{ marginTop:'50px'}}>
+      <h1>Salary List Application</h1>
       {isClient && (
-        <p>This site allows you to insert data, fetch data, and upload files!</p>
+        <p>This site allows user to insert data (Title and Salary), get the list of data and upload file. </p>
+        
       )}
     </div>
   );

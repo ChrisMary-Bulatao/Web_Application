@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: gcr.io/flaskgkeuploader/frontend:latest
+        image: gcr.io/ica-1-436122/frontend_images:latest
         ports:
         - containerPort: 3000
         # Environment variables section must be inside the container definition
