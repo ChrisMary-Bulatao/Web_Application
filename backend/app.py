@@ -10,16 +10,16 @@ CORS(app)
 
 # Fetch environment variables
 db_user = os.getenv('DB_USER', 'admin1')
-db_pass = os.getenv('DB_PASS', 'Test1234*')
-db_name = os.getenv('DB_NAME', 'flask_app_db')
-db_host = os.getenv('DB_HOST', '34.31.3.147')  # Localhost if using Cloud SQL Proxy
+db_pass = os.getenv('DB_PASS', 'admin123')
+db_name = os.getenv('DB_NAME', 'myappdb')
+db_host = os.getenv('DB_HOST', '34.172.172.39')  # Localhost if using Cloud SQL Proxy
 
-os.environ["GCLOUD_PROJECT"] = "flaskgkeuploader"
+os.environ["GCLOUD_PROJECT"] = "ica-1-436122"
 
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv('CREDENTIALS', "./application_default_credentials.json")
 # Set the Google Cloud Storage bucket name
-BUCKET_NAME = 'flaskgke-bucket'
+BUCKET_NAME = 'bucket1-ica1'
 
 # Database connection setup (change according to your GCP PostgreSQL details)
 def connect_db():
