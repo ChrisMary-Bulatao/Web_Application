@@ -5,7 +5,6 @@ from flask_cors import CORS
 import os
 
 app = Flask(__name__)
-
 CORS(app)
 
 # Fetch environment variables
@@ -15,13 +14,12 @@ db_name = os.getenv('DB_NAME', 'myappdb')
 db_host = os.getenv('DB_HOST', '34.172.172.39')  # Localhost if using Cloud SQL Proxy
 
 os.environ["GCLOUD_PROJECT"] = "ica-1-436122"
-
-
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv('CREDENTIALS', "./application_default_credentials.json")
+
 # Set the Google Cloud Storage bucket name
 BUCKET_NAME = 'bucket1-ica1'
 
-# Database connection setup (change according to your GCP PostgreSQL details)
+# Database connection setup
 def connect_db():
     conn = psycopg2.connect(
         user=db_user,
@@ -32,7 +30,7 @@ def connect_db():
     )
     return conn
 
-# GCP Bucket setup (change according to your bucket)
+# GCP Bucket setup
 def upload_to_gcp(file):
     client = storage.Client()
     bucket = client.get_bucket(BUCKET_NAME)
@@ -40,57 +38,71 @@ def upload_to_gcp(file):
     blob.upload_from_file(file)
     return f'File {file.filename} uploaded to GCP Bucket'
 
-# Endpoint to insert data into PostgreSQL
+# Create positions table if it does not exist
+def create_positions_table():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS positions (
+            id SERIAL PRIMARY KEY,
+            position VARCHAR(100),
+            salary NUMERIC
+        )
+    """)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# Call the function to create the positions table
+create_positions_table()
+
+# Endpoint to insert data into positions table
 @app.route('/insert', methods=['POST'])
 def insert_data():
     data = request.json
-    name = data.get('name')
-    email = data.get('email')
+    position = data.get('position')
+    salary = data.get('salary')
 
     conn = connect_db()
     cursor = conn.cursor()
-
-    cursor.execute("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(100), email VARCHAR(100))")
-    conn.commit()
-
-    cursor.execute("INSERT INTO users (name, email) VALUES (%s, %s)", (name, email))
+    
+    cursor.execute("INSERT INTO positions (position, salary) VALUES (%s, %s)", (position, salary))
     conn.commit()
     cursor.close()
     conn.close()
 
     return jsonify({"message": "Data inserted successfully"}), 201
 
-# Endpoint to fetch data from PostgreSQL
+# Endpoint to fetch data from positions table
 @app.route('/get', methods=['GET'])
 def get_data():
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
+    cursor.execute("SELECT * FROM positions")
+    positions = cursor.fetchall()
     cursor.close()
     conn.close()
 
-    return jsonify(users)
+    return jsonify(positions)
 
-# Endpoint to delete user from PostgreSQL
-@app.route('/delete/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
+# Endpoint to delete a position from the positions table
+@app.route('/delete/<int:position_id>', methods=['DELETE'])
+def delete_position(position_id):
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+    cursor.execute("DELETE FROM positions WHERE id = %s", (position_id,))
     conn.commit()
     cursor.close()
     conn.close()
-    return jsonify({"message": "User deleted successfully"}), 200
+    return jsonify({"message": "Position deleted successfully"}), 200
 
-# Endpoint to upload file to GCP bucket
+# Endpoint to upload a file to GCP bucket
 @app.route('/upload', methods=['POST'])
 def upload_file():
     file = request.files['file']
     if not file:
         return jsonify({"message": "No file provided!"}), 400
     
-    file = request.files['file']
     if file.filename == '':
         return jsonify({"message": "No selected file"}), 400
 
@@ -98,4 +110,4 @@ def upload_file():
     return jsonify({"message": message})
 
 if __name__ == '__main__':
-       app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
