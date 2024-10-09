@@ -8,7 +8,7 @@ export default function UploadPage() {
     const formData = new FormData();
     formData.append('file', file);
 
-    const res = await fetch('http://localhost:5000/upload', {
+    const res = await fetch('http://34.123.92.41/upload', {
       method: 'POST',
       body: formData,
     });
